@@ -7,3 +7,4 @@ qq.login_by_qrcode()
 while True:
     qq.check_msg()
     time.sleep(2)
+    
