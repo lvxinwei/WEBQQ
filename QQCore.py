@@ -235,6 +235,7 @@ class QQCore:
             ('clientid', self.data['client_id']),
             ('psessionid', self.data['psessionid'])
         )
+        print data
         return self.req.post(req_url,data)
     def check_msg(self):
         # 调用后进入单次轮询，等待服务器发回状态。
@@ -273,13 +274,6 @@ class QQCore:
         except Exception,e:
             print e
             pass
-
-qq=QQCore(False)
-qq.login_by_qrcode()
-while True:
-    qq.check_msg()
-    time.sleep(2)
-
 
 
 
