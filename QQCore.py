@@ -229,10 +229,10 @@ class QQCore:
             print e
             pass
     #回复私人信息
-    def replay(self,tuin,reply_content,message_id=78652,error_times=0):
+    def reply(self,tuin,reply_content,message_id=78652,error_times=0):
         if error_times>4:
             return False
-        fix_content = str(reply_content.replace("\\", "\\\\\\\\").replace("\n", "\\\\n").replace("\t", "\\\\t")).decode("utf-8")
+        fix_content = reply_content.replace("\\", "\\\\\\\\").replace("\n", "\\\\n").replace("\t", "\\\\t").encode("utf-8")
         rsp = ""
 
         req_url = "http://d.web2.qq.com/channel/send_buddy_msg2"
@@ -246,7 +246,7 @@ class QQCore:
         if ret['retcode']==0:
             return True
         else:
-            return self.replay(tuin,reply_content,message_id,error_times+1)
+            return self.reply(tuin,reply_content,message_id,error_times+1)
     def check_msg(self):
         # 调用后进入单次轮询，等待服务器发回状态。
         ret = self.req.post('http://d.web2.qq.com/channel/poll2', {
