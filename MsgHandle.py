@@ -57,7 +57,7 @@ class MsgHandle:
         time=msg['time']
         content=msg['content']
         uin=self.qq.friendList[account]['uin']
-        if self.qq.replay(uin,content,msg_id):
+        if self.qq.reply(uin,content,msg_id):
             key="message:"+str(account)+":"+time+":"+str(msg_id)+":out"
             self.__setValue(key,content)
             return True
@@ -103,8 +103,8 @@ class MsgHandle:
 
 if __name__=='__main__':
     msgh=MsgHandle()
-    # while True:
-    #     msgh.start()
-    #     time.sleep(1)
-    #print msgh.getLastMsgId(857280627)
-    print msgh.getMsgByAccount(857280627)
+    while True:
+        msgh.start()
+        time.sleep(1)
+    # print msgh.getLastMsgId(857280627)
+    # print msgh.getMsgByAccount(857280627)
