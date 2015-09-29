@@ -61,7 +61,10 @@ class MsgHandle:
         print msg_id
         time=msg['time']
         content=msg['content']
-        uin=self.qq.friendList[account]['uin']
+        try:
+            uin=self.qq.friendList[account]['uin']
+        except:
+            uin=self.qq.getFriendInfo()[account]['uin']
         if self.qq.reply(uin,content,msg_id):
             key="message:"+str(account)+":"+time+":"+str(msg_id)+":out"
             self.__setValue(key,content)
