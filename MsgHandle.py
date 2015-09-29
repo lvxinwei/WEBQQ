@@ -64,7 +64,10 @@ class MsgHandle:
         try:
             uin=self.qq.friendList[account]['uin']
         except:
-            uin=self.qq.getFriendInfo()[account]['uin']
+            try:
+                uin=self.qq.getFriendInfo()[account]['uin']
+            except:
+                print "not friend"
         if self.qq.reply(uin,content,msg_id):
             key="message:"+str(account)+":"+time+":"+str(msg_id)+":out"
             self.__setValue(key,content)
