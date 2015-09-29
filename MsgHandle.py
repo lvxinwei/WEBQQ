@@ -58,7 +58,6 @@ class MsgHandle:
         msg=json.loads(msg)
         account=msg['account']
         msg_id=self.getLastMsgId(account)+1
-        print msg_id
         time=msg['time']
         content=msg['content']
         try:
@@ -68,6 +67,7 @@ class MsgHandle:
                 uin=self.qq.getFriendInfo()[account]['uin']
             except:
                 print "not friend"
+                return False
         if self.qq.reply(uin,content,msg_id):
             key="message:"+str(account)+":"+time+":"+str(msg_id)+":out"
             self.__setValue(key,content)
