@@ -165,7 +165,7 @@ class QQCore:
         print msgs
         for msg in msgs:
             temp=json.dumps(msg)
-            self.redis.rpush("message_box",temp)
+            self.redis.rpush("message_box_in",temp)
 
 
     def getAccountByUin(self,uin):
@@ -229,7 +229,7 @@ class QQCore:
             print e
             pass
     #回复私人信息
-    def replay(self,tuin,reply_content,error_times=0):
+    def replay(self,tuin,reply_content,message_id=78652,error_times=0):
         if error_times>4:
             return False
         fix_content = str(reply_content.replace("\\", "\\\\\\\\").replace("\n", "\\\\n").replace("\t", "\\\\t")).decode("utf-8")
@@ -237,16 +237,16 @@ class QQCore:
 
         req_url = "http://d.web2.qq.com/channel/send_buddy_msg2"
         data = (
-            ('r', '{{"to":{0}, "face":594, "content":"[\\"{4}\\", [\\"font\\", {{\\"name\\":\\"Arial\\", \\"size\\":\\"10\\", \\"style\\":[0, 0, 0], \\"color\\":\\"000000\\"}}]]", "clientid":"{1}", "msg_id":{2}, "psessionid":"{3}"}}'.format(tuin, self.data['client_id'], "78652",self.data['psessionid'], fix_content)),
+            ('r', '{{"to":{0}, "face":594, "content":"[\\"{4}\\", [\\"font\\", {{\\"name\\":\\"Arial\\", \\"size\\":\\"10\\", \\"style\\":[0, 0, 0], \\"color\\":\\"000000\\"}}]]", "clientid":"{1}", "msg_id":{2}, "psessionid":"{3}"}}'.format(tuin, self.data['client_id'], message_id,self.data['psessionid'], fix_content)),
             ('clientid', self.data['client_id']),
             ('psessionid', self.data['psessionid'])
         )
         ret=self.req.post(req_url,data)
         ret=json.loads(ret)
-        if ret['ret_code']==0:
+        if ret['retcode']==0:
             return True
         else:
-            return self.replay(tuin,reply_content,error_times+1)
+            return self.replay(tuin,reply_content,message_id,error_times+1)
     def check_msg(self):
         # 调用后进入单次轮询，等待服务器发回状态。
         ret = self.req.post('http://d.web2.qq.com/channel/poll2', {
