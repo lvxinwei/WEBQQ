@@ -180,6 +180,8 @@ class QQCore:
     #获取好友详细信息
     def getFriendInfo(self):
         ret=self.getFriendList()
+        if not ret:
+            return False
         friendlist={}
         uinInfo={}
         for user in ret['marknames']:
@@ -202,15 +204,17 @@ class QQCore:
 
     #获取所有用户列表，但是不含QQ号
     def getFriendList(self):
-        requestUrl="http://s.web2.qq.com/api/get_user_friends2"
-        hash=self.__hash(self.data['selfuin'],self.req.getCookies()['ptwebqq'])
-        ret=self.req.post(requestUrl,{'vfwebqq':self.data['vfwebqq'],'hash':hash})
-        ret=json.loads(ret)
-        print ret
-        if ret['retcode'] ==0:
-            return ret['result']
-        else :
-            return False
+        try :
+            requestUrl="http://s.web2.qq.com/api/get_user_friends2"
+            hash=self.__hash(self.data['selfuin'],self.req.getCookies()['ptwebqq'])
+            ret=self.req.post(requestUrl,{'vfwebqq':self.data['vfwebqq'],'hash':hash})
+            ret=json.loads(ret)
+            if ret['retcode'] ==0:
+                return ret['result']
+            else :
+                return False
+        except Exception,e:
+            print e
     #通过UIN获取QQ号
     def uin_to_account(self, uin):
         uin_str = str(uin)
@@ -225,7 +229,9 @@ class QQCore:
             print e
             pass
     #回复私人信息
-    def replay(self,tuin,reply_content):
+    def replay(self,tuin,reply_content,error_times=0):
+        if error_times>4:
+            return False
         fix_content = str(reply_content.replace("\\", "\\\\\\\\").replace("\n", "\\\\n").replace("\t", "\\\\t")).decode("utf-8")
         rsp = ""
 
@@ -235,8 +241,12 @@ class QQCore:
             ('clientid', self.data['client_id']),
             ('psessionid', self.data['psessionid'])
         )
-        print data
-        return self.req.post(req_url,data)
+        ret=self.req.post(req_url,data)
+        ret=json.loads(ret)
+        if ret['ret_code']==0:
+            return True
+        else:
+            return self.replay(tuin,reply_content,error_times+1)
     def check_msg(self):
         # 调用后进入单次轮询，等待服务器发回状态。
         ret = self.req.post('http://d.web2.qq.com/channel/poll2', {
