@@ -33,6 +33,8 @@ class MsgHandle:
     def getMsgByAccount(self,account):
         likeKey='message:'+str(account)+"*"
         keys=self.__getLikeKeys(likeKey)
+        if keys==[]:
+            return None
         #对keys排序
         keys=sorted(keys,sortMsg)
         ret=[]
@@ -40,7 +42,10 @@ class MsgHandle:
             ret.append([key,self.__getValue(key)])
         return ret
     def getLastMsgId(self,account):
-        lastMsgKey=self.getMsgByAccount(account)[-1][0]
+        allMsg=self.getMsgByAccount(account)
+        if not allMsg:
+            return 0
+        lastMsgKey=allMsg[-1][0]
         return int(lastMsgKey.split(":")[-2])
     def start(self):
         msg_in=self.__lpop('message_box_in')
